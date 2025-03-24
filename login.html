@@ -279,21 +279,6 @@
                     <div class="register-link" id="register-link">Register Now</div>
                 </div>
             </form>
-
-            <!-- Debug Panel -->
-            <div class="debug-panel" id="debug-panel">
-                <div class="debug-title">Debug Information</div>
-                <div>Status: <span id="debug-status">Ready</span></div>
-                <div>Last Request: <span id="debug-request">None</span></div>
-                <div>Last Response: <span id="debug-response">None</span></div>
-                <div class="debug-log" id="debug-log"></div>
-                
-                <div class="action-buttons">
-                    <button class="action-btn" id="try-get">Try GET Request</button>
-                    <button class="action-btn" id="try-post">Try POST Request</button>
-                    <button class="action-btn secondary" id="go-home">Go to Home</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -327,17 +312,12 @@
         document.getElementById('login-spinner').style.display = 'block';
 
         try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
+            const response = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`, {
+                method: 'GET',
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 'login',
-                    username: username,
-                    password: password
-                })
+                }
             });
 
             if (!response.ok) {
@@ -377,7 +357,6 @@
             eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
         }
     });
-</script>
-
+    </script>
 </body>
 </html>
