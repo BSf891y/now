@@ -6,233 +6,8 @@
     <title>Login - Crypto Trading Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Reset & Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-
-        /* Container */
-        .container {
-            width: 470px;
-            margin: 0 auto;
-            padding: 0;
-            position: relative;
-            min-width: 470px;
-            background-color: #fff;
-            min-height: 100vh;
-        }
-
-        /* Header Styles */
-        .header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #fff;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        .logo-text {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* Login Form */
-        .login-section {
-            padding: 30px 20px;
-        }
-
-        .login-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #666;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #ffa500;
-        }
-
-        .password-input-container {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            cursor: pointer;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #ffa500;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .login-options {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .forgot-password, .register-link {
-            color: #ffa500;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Error Message */
-        .error-message {
-            color: #ff3b30;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        /* Debug Panel */
-        .debug-panel {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .debug-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .debug-log {
-            font-family: monospace;
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .login-btn-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .action-btn.secondary {
-            background-color: #6c757d;
-        }
-
-        /* Media Queries for Responsiveness */
-        @media (max-width: 470px) {
-            .container {
-                width: 100%;
-                min-width: 320px;
-            }
-        }
-
-        @media (min-width: 471px) {
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
-                min-height: 100vh;
-                background-color: #f0f0f0;
-            }
-            
-            .container {
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            }
-        }
+        /* Your existing CSS styles */
+        /* ... */
     </style>
 </head>
 <body>
@@ -281,12 +56,12 @@
             </form>
 
             <!-- Debug Panel -->
-            <div class="debug-panel" id="debug-panel">
+            <div class="debug-panel" id="debug-panel" style="display: none;">
                 <div class="debug-title">Debug Information</div>
                 <div>Status: <span id="debug-status">Ready</span></div>
                 <div>Last Request: <span id="debug-request">None</span></div>
                 <div>Last Response: <span id="debug-response">None</span></div>
-                <div class="debug-log" id="debug-log"></div>
+                <div class="debug-log" id="debug-log" style="font-family: monospace; white-space: pre-wrap; max-height: 200px; overflow-y: auto; background-color: #333; color: #fff; padding: 10px; border-radius: 5px; margin-top: 10px;"></div>
                 
                 <div class="action-buttons">
                     <button class="action-btn" id="try-get">Try GET Request</button>
@@ -298,8 +73,8 @@
     </div>
 
     <script>
-        // Google Apps Script Web App URL - Update to use the correct URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPp62DYFxH3-z0-vVGFHY5NoB51OQOwa6AoDSg88tNPr7Q_H9nyty_PAzCScSxRZBDkw/exec';
+        // Google Apps Script Web App URL - Make sure this is correct
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEDbkAyiIJy89_FZKCyoxXXQrs5avD0vk10iKZA_f_vNN2PBuvGGZLOKnwSoS3fZ4xfw/exec';
         
         // Debug logging function
         function logDebug(message) {
@@ -310,15 +85,12 @@
             console.log(message);
         }
         
-        // Update debug status
-        function updateDebugStatus(status) {
-            document.getElementById('debug-status').textContent = status;
-        }
-        
-        // Show debug panel
-        function showDebugPanel() {
-            document.getElementById('debug-panel').style.display = 'block';
-        }
+        // Show debug panel (press Shift+D to show)
+        document.addEventListener('keydown', function(e) {
+            if (e.shiftKey && e.key === 'D') {
+                document.getElementById('debug-panel').style.display = 'block';
+            }
+        });
         
         // Toggle password visibility
         document.querySelector('.toggle-password').addEventListener('click', function() {
@@ -336,8 +108,8 @@
             }
         });
         
-        // Try GET request
-        document.getElementById('try-get').addEventListener('click', function() {
+        // Try GET request button
+        document.getElementById('try-get')?.addEventListener('click', function() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             
@@ -346,11 +118,11 @@
                 return;
             }
             
-            tryGetRequest(username, password);
+            tryGetLogin(username, password);
         });
         
-        // Try POST request
-        document.getElementById('try-post').addEventListener('click', function() {
+        // Try POST request button
+        document.getElementById('try-post')?.addEventListener('click', function() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             
@@ -359,11 +131,11 @@
                 return;
             }
             
-            tryPostRequest(username, password);
+            tryJsonLogin(username, password);
         });
         
-        // Go to home
-        document.getElementById('go-home').addEventListener('click', function() {
+        // Go to home button
+        document.getElementById('go-home')?.addEventListener('click', function() {
             const username = document.getElementById('username').value.trim();
             
             // Store minimal user data
@@ -402,215 +174,112 @@
             }
             
             if (isValid) {
-                // Use POST request for login (more secure)
-                tryPostRequest(username, password);
+                // Try both methods - first with JSON, then with GET if that fails
+                tryJsonLogin(username, password);
             }
         });
         
-        // Try GET request
-        function tryGetRequest(username, password) {
+        function tryJsonLogin(username, password) {
             // Show loading spinner
             document.getElementById('login-spinner').style.display = 'block';
             
-            // Update debug status
-            updateDebugStatus('Sending GET request...');
-            
-            // Construct URL with parameters
-            const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-            
-            // Log request
-            logDebug(`GET Request: ${url}`);
-            document.getElementById('debug-request').textContent = 'GET ' + url;
-            
-            // Send request
-            fetch(url)
-                .then(response => {
-                    // Log response status
-                    logDebug(`Response status: ${response.status} ${response.statusText}`);
-                    
-                    // Check if response is ok
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    
-                    // Get response text
-                    return response.text();
-                })
-                .then(text => {
-                    // Hide loading spinner
-                    document.getElementById('login-spinner').style.display = 'none';
-                    
-                    // Log response text
-                    logDebug(`Response text: ${text}`);
-                    document.getElementById('debug-response').textContent = text.substring(0, 50) + (text.length > 50 ? '...' : '');
-                    
-                    // Try to parse as JSON
-                    try {
-                        const data = JSON.parse(text);
-                        logDebug(`Parsed JSON: ${JSON.stringify(data)}`);
-                        
-                        if (data.status === 'success') {
-                            // Update debug status
-                            updateDebugStatus('Login successful!');
-                            
-                            // Save user data to localStorage
-                            localStorage.setItem('authToken', data.data?.token || 'temp-token');
-                            localStorage.setItem('userData', JSON.stringify(data.data || { username: username }));
-                            
-                            // Redirect to home page
-                            setTimeout(() => {
-                                window.location.href = 'index.html';
-                            }, 1000);
-                        } else {
-                            // Update debug status
-                            updateDebugStatus('Login failed: ' + (data.message || 'Unknown error'));
-                            
-                            // Show error message
-                            document.getElementById('password-error').textContent = data.message || 'Invalid username or password';
-                            document.getElementById('password-error').style.display = 'block';
-                        }
-                    } catch (e) {
-                        // JSON parsing failed
-                        logDebug(`JSON parsing error: ${e.message}`);
-                        
-                        // Check if it's an HTML response that might indicate a redirect
-                        if (text.includes('<html') && text.includes('redirect')) {
-                            // Update debug status
-                            updateDebugStatus('Received HTML response with redirect');
-                            
-                            // Save minimal user data
-                            localStorage.setItem('authToken', 'temp-token');
-                            localStorage.setItem('userData', JSON.stringify({ username: username }));
-                            
-                            // Redirect to home page
-                            setTimeout(() => {
-                                window.location.href = 'index.html';
-                            }, 1000);
-                        } else {
-                            // Update debug status
-                            updateDebugStatus('Invalid response format');
-                            
-                            // Show error message
-                            document.getElementById('password-error').textContent = 'Server returned an invalid response format';
-                            document.getElementById('password-error').style.display = 'block';
-                        }
-                    }
-                })
-                .catch(error => {
-                    // Hide loading spinner
-                    document.getElementById('login-spinner').style.display = 'none';
-                    
-                    // Log error
-                    logDebug(`Fetch error: ${error.message}`);
-                    
-                    // Update debug status
-                    updateDebugStatus('GET request failed: ' + error.message);
-                    
-                    // Show error message
-                    document.getElementById('password-error').textContent = 'Network error. Please try again.';
-                    document.getElementById('password-error').style.display = 'block';
-                });
-        }
-        
-        // Try POST request
-        function tryPostRequest(username, password) {
-            // Show loading spinner
-            document.getElementById('login-spinner').style.display = 'block';
-            
-            // Update debug status
-            updateDebugStatus('Sending POST request...');
-            
-            // Create request data
-            const requestData = {
+            // Prepare data as JSON
+            const jsonData = {
                 action: 'login',
                 username: username,
                 password: password
             };
             
-            // Log request
-            logDebug(`POST Request to ${SCRIPT_URL}`);
-            logDebug(`Request data: ${JSON.stringify(requestData)}`);
-            document.getElementById('debug-request').textContent = 'POST ' + SCRIPT_URL;
+            logDebug("Sending JSON login request: " + JSON.stringify(jsonData));
             
-            // Send request
+            // Send JSON request
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(requestData)
+                body: JSON.stringify(jsonData)
             })
             .then(response => {
-                // Log response status
-                logDebug(`Response status: ${response.status} ${response.statusText}`);
-                
-                // Check if response is ok
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                // Get response text
+                logDebug("Response status: " + response.status);
                 return response.text();
             })
             .then(text => {
-                // Hide loading spinner
-                document.getElementById('login-spinner').style.display = 'none';
+                logDebug("Response text: " + text);
                 
-                // Log response text
-                logDebug(`Response text: ${text}`);
-                document.getElementById('debug-response').textContent = text.substring(0, 50) + (text.length > 50 ? '...' : '');
-                
-                // Try to parse as JSON
                 try {
                     const data = JSON.parse(text);
-                    logDebug(`Parsed JSON: ${JSON.stringify(data)}`);
-                    
-                    if (data.status === 'success') {
-                        // Update debug status
-                        updateDebugStatus('Login successful!');
-                        
-                        // Save user data to localStorage
-                        localStorage.setItem('authToken', data.data?.token || 'temp-token');
-                        localStorage.setItem('userData', JSON.stringify(data.data || { username: username }));
-                        
-                        // Redirect to home page
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 1000);
-                    } else {
-                        // Update debug status
-                        updateDebugStatus('Login failed: ' + (data.message || 'Unknown error'));
-                        
-                        // Show error message
-                        document.getElementById('password-error').textContent = data.message || 'Invalid username or password';
-                        document.getElementById('password-error').style.display = 'block';
-                    }
+                    handleLoginResponse(data, username);
                 } catch (e) {
-                    // JSON parsing failed
-                    logDebug(`JSON parsing error: ${e.message}`);
-                    
-                    // Update debug status
-                    updateDebugStatus('Invalid response format');
-                    
-                    // Show error message
-                    document.getElementById('password-error').textContent = 'Server returned an invalid response format';
+                    logDebug("JSON parse error: " + e.message);
+                    // If JSON parsing fails, try GET method
+                    tryGetLogin(username, password);
+                }
+            })
+            .catch(error => {
+                logDebug("Fetch error: " + error.message);
+                // If fetch fails, try GET method
+                tryGetLogin(username, password);
+            });
+        }
+        
+        function tryGetLogin(username, password) {
+            // Show loading spinner
+            document.getElementById('login-spinner').style.display = 'block';
+            
+            // Construct URL with parameters
+            const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+            
+            logDebug("Sending GET login request: " + url);
+            
+            // Send GET request
+            fetch(url)
+            .then(response => {
+                logDebug("Response status: " + response.status);
+                return response.text();
+            })
+            .then(text => {
+                logDebug("Response text: " + text);
+                
+                try {
+                    const data = JSON.parse(text);
+                    handleLoginResponse(data, username);
+                } catch (e) {
+                    logDebug("JSON parse error: " + e.message);
+                    // If both methods fail, show error
+                    document.getElementById('login-spinner').style.display = 'none';
+                    document.getElementById('password-error').textContent = 'Login failed. Please try again.';
                     document.getElementById('password-error').style.display = 'block';
                 }
             })
             .catch(error => {
-                // Hide loading spinner
+                logDebug("Fetch error: " + error.message);
                 document.getElementById('login-spinner').style.display = 'none';
-                
-                // Log error
-                logDebug(`Fetch error: ${error.message}`);
-                
-                // Update debug status
-                updateDebugStatus('POST request failed: ' + error.message);
-                
-                // Show error message
                 document.getElementById('password-error').textContent = 'Network error. Please try again.';
                 document.getElementById('password-error').style.display = 'block';
             });
+        }
+        
+        function handleLoginResponse(data, username) {
+            // Hide spinner
+            document.getElementById('login-spinner').style.display = 'none';
+            
+            if (data.status === 'success') {
+                // Login successful
+                logDebug("Login successful!");
+                
+                // Save user data to localStorage
+                localStorage.setItem('authToken', data.data?.token || 'temp-token');
+                localStorage.setItem('userData', JSON.stringify(data.data || { username: username }));
+                
+                // Redirect to home page
+                window.location.href = 'index.html';
+            } else {
+                // Login failed
+                logDebug("Login failed: " + (data.message || "Unknown error"));
+                document.getElementById('password-error').textContent = data.message || 'Invalid username or password';
+                document.getElementById('password-error').style.display = 'block';
+            }
         }
         
         // Register link
@@ -625,15 +294,16 @@
         
         // Check for URL parameters (for redirects from registration)
         window.addEventListener('load', function() {
-            // Show debug panel if in debug mode
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('debug') === 'true') {
-                showDebugPanel();
-            }
             
             // Check for registration success message
             if (urlParams.get('registered') === 'true') {
                 alert('Registration successful! Please log in with your new account.');
+            }
+            
+            // Check for debug mode
+            if (urlParams.get('debug') === 'true') {
+                document.getElementById('debug-panel').style.display = 'block';
             }
         });
     </script>
