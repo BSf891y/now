@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Crypto Trading Platform</title>
+    <title>Login - AI Trading Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Reset & Base Styles */
@@ -299,7 +299,7 @@
 
     <script>
     // Google Apps Script Web App URL - Replace with your actual deployment URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxuLde3epPsZxNo6neAm5ubqzUTNlVScVxlTPBJfn_HhgUNfU-fpp1HMEnTsnHiuycTog/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmlOztjN1M3eSNyTomYuIDWAdpSMD3AyHGbFuD1RrSFF_8cUoPY7zY3FqmwHI4vH7zpQ/exec';
     
     // Debug mode - set to true to see detailed logs
     const DEBUG_MODE = true;
@@ -379,7 +379,7 @@
                 const isConnected = await testApiConnection();
                 
                 if (!isConnected) {
-                    throw new Error('Cannot connect to server');
+                    throw new Error('Cannot connect to server. Please check your deployment URL.');
                 }
                 
                 // Proceed with login
@@ -401,7 +401,10 @@
             const response = await fetch(`${SCRIPT_URL}?action=test`, {
                 method: 'GET',
                 mode: 'cors',
-                cache: 'no-cache'
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             
             logDebug(`Test response status: ${response.status}`);
@@ -411,6 +414,7 @@
             }
             
             const data = await response.json();
+            logDebug(`Test response data: ${JSON.stringify(data)}`);
             return data.status === 'success';
         } catch (error) {
             logDebug(`Test connection error: ${error.message}`);
@@ -426,7 +430,10 @@
             const response = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`, {
                 method: 'GET',
                 mode: 'cors',
-                cache: 'no-cache'
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             
             logDebug(`Login response status: ${response.status}`);
