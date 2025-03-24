@@ -298,8 +298,8 @@
     </div>
 
     <script>
-        // Google Apps Script Web App URL - Using the provided URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjhr3lc5OM_khmMAcllR-HEqsg7Zm3oVHZj3cXBRgI7W_jt7DaQfZHYT2-Hl1i8LoUOQ/exec';
+        // Google Apps Script Web App URL - Update to use the correct URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPp62DYFxH3-z0-vVGFHY5NoB51OQOwa6AoDSg88tNPr7Q_H9nyty_PAzCScSxRZBDkw/exec';
         
         // Debug logging function
         function logDebug(message) {
@@ -402,11 +402,8 @@
             }
             
             if (isValid) {
-                // Show debug panel
-                showDebugPanel();
-                
-                // Try GET request first (more likely to work with Google Apps Script)
-                tryGetRequest(username, password);
+                // Use POST request for login (more secure)
+                tryPostRequest(username, password);
             }
         });
         
@@ -624,6 +621,20 @@
         // Forgot password
         document.querySelector('.forgot-password').addEventListener('click', function() {
             alert('Password recovery feature coming soon.');
+        });
+        
+        // Check for URL parameters (for redirects from registration)
+        window.addEventListener('load', function() {
+            // Show debug panel if in debug mode
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('debug') === 'true') {
+                showDebugPanel();
+            }
+            
+            // Check for registration success message
+            if (urlParams.get('registered') === 'true') {
+                alert('Registration successful! Please log in with your new account.');
+            }
         });
     </script>
 </body>
