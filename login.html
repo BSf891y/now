@@ -1,515 +1,145 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - AI Trading Platform</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Reset & Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+// Global variables
+const SHEET_ID = "13YQtVVTAzbuhbCN04_31ssgJHLxKzf75BJ6KnBOt0";
+const SALT_LENGTH = 16;
+const USER_PROPS = PropertiesService.getUserProperties();
 
-        body {
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
+// Handle OPTIONS requests (required for CORS)
+function doOptions(e) {
+  return ContentService.createTextOutput(JSON.stringify({status: "success"}))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeader("Access-Control-Allow-Origin", "*")
+    .setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    .setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
 
-        /* Container */
-        .container {
-            width: 470px;
-            margin: 0 auto;
-            padding: 0;
-            position: relative;
-            min-width: 470px;
-            background-color: #fff;
-            min-height: 100vh;
-        }
+// Handle GET requests with CORS headers
+function doGet(e) {
+  return createResponse(handleRequest(e));
+}
 
-        /* Header Styles */
-        .header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #fff;
-        }
+// Handle POST requests with CORS headers
+function doPost(e) {
+  return createResponse(handleRequest(e));
+}
 
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        .logo-text {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* Login Form */
-        .login-section {
-            padding: 30px 20px;
-        }
-
-        .login-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #666;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #ffa500;
-        }
-
-        .password-input-container {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            cursor: pointer;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #ffa500;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .login-options {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .forgot-password, .register-link {
-            color: #ffa500;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Error Message */
-        .error-message {
-            color: #ff3b30;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        /* Debug Panel */
-        .debug-panel {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .debug-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .debug-log {
-            font-family: monospace;
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .login-btn-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .action-btn.secondary {
-            background-color: #6c757d;
-        }
-
-        /* Media Queries for Responsiveness */
-        @media (max-width: 470px) {
-            .container {
-                width: 100%;
-                min-width: 320px;
-            }
-        }
-
-        @media (min-width: 471px) {
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
-                min-height: 100vh;
-                background-color: #f0f0f0;
-            }
-            
-            .container {
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo">
-                <img src="/placeholder.svg?height=40&width=40" alt="Logo" class="logo-img" style="background: linear-gradient(45deg, #ff6b6b, #ffa500); border-radius: 50%;">
-                <div class="logo-text">AI ROBOT</div>
-            </div>
-        </div>
-
-        <!-- Login Form -->
-        <div class="login-section">
-            <div class="login-title">Login to Your Account</div>
-            
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="username" class="form-label">Username or Email</label>
-                    <input type="text" id="username" class="form-input" placeholder="Enter your username or email">
-                    <div class="error-message" id="username-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <div class="password-input-container">
-                        <input type="password" id="password" class="form-input" placeholder="Enter your password">
-                        <div class="toggle-password">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                    </div>
-                    <div class="error-message" id="password-error"></div>
-                </div>
-                
-                <button type="submit" class="login-btn">
-                    <div class="login-btn-content">
-                        <span>Login</span>
-                        <div class="spinner" id="login-spinner"></div>
-                    </div>
-                </button>
-                
-                <div class="login-options">
-                    <div class="forgot-password">Forgot Password?</div>
-                    <div class="register-link" id="register-link">Register Now</div>
-                </div>
-            </form>
-
-            <!-- Debug Panel -->
-            <div class="debug-panel" id="debug-panel">
-                <div class="debug-title">Debug Information</div>
-                <div>Status: <span id="debug-status">Ready</span></div>
-                <div>Last Request: <span id="debug-request">None</span></div>
-                <div>Last Response: <span id="debug-response">None</span></div>
-                <div class="debug-log" id="debug-log"></div>
-                
-                <div class="action-buttons">
-                    <button class="action-btn" id="try-get">Try GET Request</button>
-                    <button class="action-btn" id="try-post">Try POST Request</button>
-                    <button class="action-btn secondary" id="go-home">Go to Home</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-    // Google Apps Script Web App URL - Replace with your actual deployment URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmlOztjN1M3eSNyTomYuIDWAdpSMD3AyHGbFuD1RrSFF_8cUoPY7zY3FqmwHI4vH7zpQ/exec';
+// Function to handle both GET and POST requests
+function handleRequest(e) {
+  try {
+    Logger.log("Received request: " + JSON.stringify(e));
+    let params = extractParams(e);
+    const action = params.action;
     
-    // Debug mode - set to true to see detailed logs
-    const DEBUG_MODE = true;
-    
-    // Debug logging function
-    function logDebug(message) {
-        if (DEBUG_MODE) {
-            console.log(message);
-            
-            // If debug panel exists, log there too
-            const debugLog = document.getElementById('debug-log');
-            if (debugLog) {
-                const timestamp = new Date().toLocaleTimeString();
-                debugLog.textContent += `[${timestamp}] ${message}\n`;
-                debugLog.scrollTop = debugLog.scrollHeight;
-            }
-        }
+    if (!action) {
+      return { status: 'error', message: 'Missing action parameter' };
+    }
+
+    switch (action) {
+      case 'test':
+        return { status: 'success', message: 'API is working!', timestamp: new Date().toISOString() };
+      case 'login':
+        return handleLogin(params);
+      case 'register':
+        return handleRegister(params);
+      default:
+        return { status: 'error', message: 'Invalid action. Supported actions: login, register, test' };
+    }
+  } catch (error) {
+    Logger.log("Error in handleRequest: " + error);
+    return { status: 'error', message: 'Server error: ' + error.message };
+  }
+}
+
+// Extract parameters from request
+function extractParams(e) {
+  let params = {};
+  try {
+    if (e.postData && e.postData.contents) {
+      params = JSON.parse(e.postData.contents);
+    } else {
+      params = e.parameter;
+    }
+  } catch (error) {
+    Logger.log("Error parsing parameters: " + error);
+  }
+  return params;
+}
+
+// Create a consistent response format
+function createResponse(response) {
+  return ContentService.createTextOutput(JSON.stringify(response))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeader("Access-Control-Allow-Origin", "*")
+    .setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    .setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
+
+// Handle login requests
+function handleLogin(params) {
+  try {
+    const { username, password } = params;
+    if (!username || !password) {
+      return { status: 'error', message: 'Username and password are required' };
     }
     
-    // Show debug panel
-    if (DEBUG_MODE) {
-        const debugPanel = document.getElementById('debug-panel');
-        if (debugPanel) {
-            debugPanel.style.display = 'block';
-        }
+    const sheet = getSheet('Users');
+    if (!sheet) return { status: 'error', message: 'User data unavailable' };
+    
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return { status: 'error', message: 'Authentication failed' };
+    
+    const headers = data[0];
+    const usernameCol = headers.indexOf('username');
+    const passwordCol = headers.indexOf('password');
+    if (usernameCol === -1 || passwordCol === -1) return { status: 'error', message: 'Invalid user database' };
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][usernameCol] === username && data[i][passwordCol] === password) {
+        return { status: 'success', message: 'Login successful', token: Utilities.getUuid() };
+      }
+    }
+    return { status: 'error', message: 'Invalid username or password' };
+  } catch (error) {
+    Logger.log("Login error: " + error);
+    return { status: 'error', message: 'Authentication failed' };
+  }
+}
+
+// Handle register requests
+function handleRegister(params) {
+  try {
+    const { username, password } = params;
+    if (!username || !password) {
+      return { status: 'error', message: 'Username and password are required' };
     }
     
-    // Toggle password visibility
-    document.querySelector('.toggle-password').addEventListener('click', function() {
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = this.querySelector('i');
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye');
-        }
-    });
+    const sheet = getSheet('Users', true);
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const usernameCol = headers.indexOf('username');
     
-    // Form validation and submission
-    document.getElementById('login-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        // Reset error messages
-        document.getElementById('username-error').style.display = 'none';
-        document.getElementById('password-error').style.display = 'none';
-        
-        // Get form values
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value.trim();
-        
-        // Validate form
-        let isValid = true;
-        
-        if (!username) {
-            document.getElementById('username-error').textContent = 'Username or email is required';
-            document.getElementById('username-error').style.display = 'block';
-            isValid = false;
-        }
-        
-        if (!password) {
-            document.getElementById('password-error').textContent = 'Password is required';
-            document.getElementById('password-error').style.display = 'block';
-            isValid = false;
-        }
-        
-        if (isValid) {
-            try {
-                // Show loading spinner
-                document.getElementById('login-spinner').style.display = 'block';
-                
-                // First test API connection
-                const isConnected = await testApiConnection();
-                
-                if (!isConnected) {
-                    throw new Error('Cannot connect to server. Please check your deployment URL.');
-                }
-                
-                // Proceed with login
-                await loginUser(username, password);
-            } catch (error) {
-                document.getElementById('password-error').textContent = error.message;
-                document.getElementById('password-error').style.display = 'block';
-            } finally {
-                document.getElementById('login-spinner').style.display = 'none';
-            }
-        }
-    });
+    if (usernameCol === -1) return { status: 'error', message: 'Invalid user database' };
     
-    // Test API connection
-    async function testApiConnection() {
-        logDebug("Testing API connection...");
-        
-        try {
-            const response = await fetch(`${SCRIPT_URL}?action=test`, {
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            logDebug(`Test response status: ${response.status}`);
-            
-            if (!response.ok) {
-                throw new Error('API test failed');
-            }
-            
-            const data = await response.json();
-            logDebug(`Test response data: ${JSON.stringify(data)}`);
-            return data.status === 'success';
-        } catch (error) {
-            logDebug(`Test connection error: ${error.message}`);
-            return false;
-        }
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][usernameCol] === username) {
+        return { status: 'error', message: 'Username already exists' };
+      }
     }
     
-    // Login user
-    async function loginUser(username, password) {
-        logDebug(`Attempting login for user: ${username}`);
-        
-        try {
-            const response = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`, {
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            logDebug(`Login response status: ${response.status}`);
-            
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            
-            const data = await response.json();
-            logDebug(`Login response: ${JSON.stringify(data)}`);
-            
-            if (data.status === 'success') {
-                // Store auth data
-                localStorage.setItem('authToken', data.data.token);
-                localStorage.setItem('userData', JSON.stringify(data.data));
-                
-                // Redirect to home
-                window.location.href = 'index.html';
-            } else {
-                throw new Error(data.message || 'Login failed');
-            }
-        } catch (error) {
-            logDebug(`Login error: ${error.message}`);
-            throw new Error(error.message || 'Login failed. Please try again.');
-        }
-    }
-    
-    // Register link
-    document.getElementById('register-link').addEventListener('click', function() {
-        window.location.href = 'register.html';
-    });
-    
-    // Forgot password
-    document.querySelector('.forgot-password').addEventListener('click', function() {
-        alert('Password recovery feature coming soon.');
-    });
-    
-    // Debug buttons
-    document.getElementById('try-get').addEventListener('click', async function() {
-        try {
-            const response = await fetch(`${SCRIPT_URL}?action=test`);
-            const data = await response.json();
-            document.getElementById('debug-response').textContent = JSON.stringify(data, null, 2);
-        } catch (error) {
-            document.getElementById('debug-response').textContent = error.message;
-        }
-    });
-    
-    document.getElementById('try-post').addEventListener('click', async function() {
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ action: 'test' })
-            });
-            const data = await response.json();
-            document.getElementById('debug-response').textContent = JSON.stringify(data, null, 2);
-        } catch (error) {
-            document.getElementById('debug-response').textContent = error.message;
-        }
-    });
-    
-    document.getElementById('go-home').addEventListener('click', function() {
-        window.location.href = 'index.html';
-    });
-    
-    // Check for URL parameters
-    window.addEventListener('load', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('registered') === 'true') {
-            alert('Registration successful! Please log in with your new account.');
-        }
-    });
-    </script>
-</body>
-</html>
+    sheet.appendRow([username, password]);
+    return { status: 'success', message: 'Registration successful' };
+  } catch (error) {
+    Logger.log("Registration error: " + error);
+    return { status: 'error', message: 'Registration failed' };
+  }
+}
+
+// Retrieve or create a sheet
+function getSheet(sheetName, createIfMissing = false) {
+  const spreadsheet = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = spreadsheet.getSheetByName(sheetName);
+  if (!sheet && createIfMissing) {
+    sheet = spreadsheet.insertSheet(sheetName);
+    sheet.appendRow(['username', 'password']);
+  }
+  return sheet;
+}
