@@ -1,193 +1,630 @@
-<script>
-    // Google Apps Script Web App URL - Update with your new deployment URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_NEW_DEPLOYMENT_ID/exec';
-    
-    // Debug mode - set to true to see detailed logs
-    const DEBUG_MODE = true;
-    
-    // Debug logging function
-    function logDebug(message) {
-        if (DEBUG_MODE) {
-            console.log(message);
-            
-            // If debug panel exists, log there too
-            const debugLog = document.getElementById('debug-log');
-            if (debugLog) {
-                const timestamp = new Date().toLocaleTimeString();
-                debugLog.textContent += `[${timestamp}] ${message}\n`;
-                debugLog.scrollTop = debugLog.scrollHeight;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Crypto Trading Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Container */
+        .container {
+            width: 470px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-width: 470px;
+            background-color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Login Form */
+        .login-section {
+            padding: 30px 20px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffa500;
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #ffa500;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .forgot-password, .register-link {
+            color: #ffa500;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Error Message */
+        .error-message {
+            color: #ff3b30;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Debug Panel */
+        .debug-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .debug-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .debug-log {
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .action-btn.secondary {
+            background-color: #6c757d;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 470px) {
+            .container {
+                width: 100%;
+                min-width: 320px;
             }
         }
-    }
-    
-    // Show debug panel
-    if (DEBUG_MODE) {
-        const debugPanel = document.getElementById('debug-panel');
-        if (debugPanel) {
-            debugPanel.style.display = 'block';
+
+        @media (min-width: 471px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                min-height: 100vh;
+                background-color: #f0f0f0;
+            }
+            
+            .container {
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            }
         }
-    }
-    
-    // Toggle password visibility
-    document.querySelector('.toggle-password').addEventListener('click', function() {
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = this.querySelector('i');
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="Logo" class="logo-img" style="background: linear-gradient(45deg, #ff6b6b, #ffa500); border-radius: 50%;">
+                <div class="logo-text">AI ROBOT</div>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="login-section">
+            <div class="login-title">Login to Your Account</div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username or Email</label>
+                    <input type="text" id="username" class="form-input" placeholder="Enter your username or email">
+                    <div class="error-message" id="username-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="password" class="form-input" placeholder="Enter your password">
+                        <div class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                    <div class="error-message" id="password-error"></div>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <div class="login-btn-content">
+                        <span>Login</span>
+                        <div class="spinner" id="login-spinner"></div>
+                    </div>
+                </button>
+                
+                <div class="login-options">
+                    <div class="forgot-password">Forgot Password?</div>
+                    <div class="register-link" id="register-link">Register Now</div>
+                </div>
+            </form>
+
+            <!-- Debug Panel -->
+            <div class="debug-panel" id="debug-panel">
+                <div class="debug-title">Debug Information</div>
+                <div>Status: <span id="debug-status">Ready</span></div>
+                <div>Last Request: <span id="debug-request">None</span></div>
+                <div>Last Response: <span id="debug-response">None</span></div>
+                <div class="debug-log" id="debug-log"></div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" id="try-get">Try GET Request</button>
+                    <button class="action-btn" id="try-post">Try POST Request</button>
+                    <button class="action-btn secondary" id="go-home">Go to Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Google Apps Script Web App URL - Using the provided URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjhr3lc5OM_khmMAcllR-HEqsg7Zm3oVHZj3cXBRgI7W_jt7DaQfZHYT2-Hl1i8LoUOQ/exec';
         
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye');
+        // Debug logging function
+        function logDebug(message) {
+            const debugLog = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.textContent += `[${timestamp}] ${message}\n`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(message);
         }
-    });
-    
-    // Form validation and submission
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-        e.preventDefault();
         
-        // Reset error messages
-        document.getElementById('username-error').style.display = 'none';
-        document.getElementById('password-error').style.display = 'none';
-        
-        // Get form values
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value.trim();
-        
-        // Validate form
-        let isValid = true;
-        
-        if (!username) {
-            document.getElementById('username-error').textContent = 'Username or email is required';
-            document.getElementById('username-error').style.display = 'block';
-            isValid = false;
+        // Update debug status
+        function updateDebugStatus(status) {
+            document.getElementById('debug-status').textContent = status;
         }
         
-        if (!password) {
-            document.getElementById('password-error').textContent = 'Password is required';
-            document.getElementById('password-error').style.display = 'block';
-            isValid = false;
+        // Show debug panel
+        function showDebugPanel() {
+            document.getElementById('debug-panel').style.display = 'block';
         }
         
-        if (isValid) {
-            // First test if the API is accessible
-            testApiConnection()
-                .then(isConnected => {
-                    if (isConnected) {
-                        // API is accessible, proceed with login
-                        loginUser(username, password);
-                    } else {
-                        // API is not accessible
-                        document.getElementById('password-error').textContent = 'Cannot connect to server. Please try again later.';
-                        document.getElementById('password-error').style.display = 'block';
+        // Toggle password visibility
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+        
+        // Try GET request
+        document.getElementById('try-get').addEventListener('click', function() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                alert('Please enter username and password');
+                return;
+            }
+            
+            tryGetRequest(username, password);
+        });
+        
+        // Try POST request
+        document.getElementById('try-post').addEventListener('click', function() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                alert('Please enter username and password');
+                return;
+            }
+            
+            tryPostRequest(username, password);
+        });
+        
+        // Go to home
+        document.getElementById('go-home').addEventListener('click', function() {
+            const username = document.getElementById('username').value.trim();
+            
+            // Store minimal user data
+            localStorage.setItem('authToken', 'debug-token');
+            localStorage.setItem('userData', JSON.stringify({ username: username || 'debug-user' }));
+            
+            // Redirect to home
+            window.location.href = 'index.html';
+        });
+        
+        // Form validation and submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset error messages
+            document.getElementById('username-error').style.display = 'none';
+            document.getElementById('password-error').style.display = 'none';
+            
+            // Get form values
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            // Validate form
+            let isValid = true;
+            
+            if (!username) {
+                document.getElementById('username-error').textContent = 'Username or email is required';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!password) {
+                document.getElementById('password-error').textContent = 'Password is required';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Show debug panel
+                showDebugPanel();
+                
+                // Try GET request first (more likely to work with Google Apps Script)
+                tryGetRequest(username, password);
+            }
+        });
+        
+        // Try GET request
+        function tryGetRequest(username, password) {
+            // Show loading spinner
+            document.getElementById('login-spinner').style.display = 'block';
+            
+            // Update debug status
+            updateDebugStatus('Sending GET request...');
+            
+            // Construct URL with parameters
+            const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+            
+            // Log request
+            logDebug(`GET Request: ${url}`);
+            document.getElementById('debug-request').textContent = 'GET ' + url;
+            
+            // Send request
+            fetch(url)
+                .then(response => {
+                    // Log response status
+                    logDebug(`Response status: ${response.status} ${response.statusText}`);
+                    
+                    // Check if response is ok
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
                     }
+                    
+                    // Get response text
+                    return response.text();
+                })
+                .then(text => {
+                    // Hide loading spinner
+                    document.getElementById('login-spinner').style.display = 'none';
+                    
+                    // Log response text
+                    logDebug(`Response text: ${text}`);
+                    document.getElementById('debug-response').textContent = text.substring(0, 50) + (text.length > 50 ? '...' : '');
+                    
+                    // Try to parse as JSON
+                    try {
+                        const data = JSON.parse(text);
+                        logDebug(`Parsed JSON: ${JSON.stringify(data)}`);
+                        
+                        if (data.status === 'success') {
+                            // Update debug status
+                            updateDebugStatus('Login successful!');
+                            
+                            // Save user data to localStorage
+                            localStorage.setItem('authToken', data.data?.token || 'temp-token');
+                            localStorage.setItem('userData', JSON.stringify(data.data || { username: username }));
+                            
+                            // Redirect to home page
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 1000);
+                        } else {
+                            // Update debug status
+                            updateDebugStatus('Login failed: ' + (data.message || 'Unknown error'));
+                            
+                            // Show error message
+                            document.getElementById('password-error').textContent = data.message || 'Invalid username or password';
+                            document.getElementById('password-error').style.display = 'block';
+                        }
+                    } catch (e) {
+                        // JSON parsing failed
+                        logDebug(`JSON parsing error: ${e.message}`);
+                        
+                        // Check if it's an HTML response that might indicate a redirect
+                        if (text.includes('<html') && text.includes('redirect')) {
+                            // Update debug status
+                            updateDebugStatus('Received HTML response with redirect');
+                            
+                            // Save minimal user data
+                            localStorage.setItem('authToken', 'temp-token');
+                            localStorage.setItem('userData', JSON.stringify({ username: username }));
+                            
+                            // Redirect to home page
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 1000);
+                        } else {
+                            // Update debug status
+                            updateDebugStatus('Invalid response format');
+                            
+                            // Show error message
+                            document.getElementById('password-error').textContent = 'Server returned an invalid response format';
+                            document.getElementById('password-error').style.display = 'block';
+                        }
+                    }
+                })
+                .catch(error => {
+                    // Hide loading spinner
+                    document.getElementById('login-spinner').style.display = 'none';
+                    
+                    // Log error
+                    logDebug(`Fetch error: ${error.message}`);
+                    
+                    // Update debug status
+                    updateDebugStatus('GET request failed: ' + error.message);
+                    
+                    // Show error message
+                    document.getElementById('password-error').textContent = 'Network error. Please try again.';
+                    document.getElementById('password-error').style.display = 'block';
                 });
         }
-    });
-    
-    // Test API connection
-    function testApiConnection() {
-        logDebug("Testing API connection...");
         
-        return fetch(`${SCRIPT_URL}?action=test`, { 
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-        })
-        .then(response => {
-            logDebug(`Test response status: ${response.status}`);
-            return response.ok;
-        })
-        .catch(error => {
-            logDebug(`Test connection error: ${error.message}`);
-            return false;
-        });
-    }
-    
-    // Login user
-    function loginUser(username, password) {
-        // Show loading spinner
-        document.getElementById('login-spinner').style.display = 'block';
-        
-        logDebug(`Attempting login for user: ${username}`);
-        
-        // Try URL parameters method first (more compatible with Google Apps Script)
-        const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-        
-        fetch(url, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-        })
-        .then(response => {
-            logDebug(`Login response status: ${response.status}`);
+        // Try POST request
+        function tryPostRequest(username, password) {
+            // Show loading spinner
+            document.getElementById('login-spinner').style.display = 'block';
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            // Update debug status
+            updateDebugStatus('Sending POST request...');
             
-            return response.text();
-        })
-        .then(text => {
-            logDebug(`Login response text: ${text}`);
+            // Create request data
+            const requestData = {
+                action: 'login',
+                username: username,
+                password: password
+            };
             
-            try {
-                const data = JSON.parse(text);
+            // Log request
+            logDebug(`POST Request to ${SCRIPT_URL}`);
+            logDebug(`Request data: ${JSON.stringify(requestData)}`);
+            document.getElementById('debug-request').textContent = 'POST ' + SCRIPT_URL;
+            
+            // Send request
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                // Log response status
+                logDebug(`Response status: ${response.status} ${response.statusText}`);
                 
-                // Hide spinner
+                // Check if response is ok
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                // Get response text
+                return response.text();
+            })
+            .then(text => {
+                // Hide loading spinner
                 document.getElementById('login-spinner').style.display = 'none';
                 
-                if (data.status === 'success') {
-                    // Login successful
-                    logDebug("Login successful!");
+                // Log response text
+                logDebug(`Response text: ${text}`);
+                document.getElementById('debug-response').textContent = text.substring(0, 50) + (text.length > 50 ? '...' : '');
+                
+                // Try to parse as JSON
+                try {
+                    const data = JSON.parse(text);
+                    logDebug(`Parsed JSON: ${JSON.stringify(data)}`);
                     
-                    // Save user data to localStorage
-                    localStorage.setItem('authToken', data.data?.token || 'temp-token');
-                    localStorage.setItem('userData', JSON.stringify(data.data || { username: username }));
+                    if (data.status === 'success') {
+                        // Update debug status
+                        updateDebugStatus('Login successful!');
+                        
+                        // Save user data to localStorage
+                        localStorage.setItem('authToken', data.data?.token || 'temp-token');
+                        localStorage.setItem('userData', JSON.stringify(data.data || { username: username }));
+                        
+                        // Redirect to home page
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1000);
+                    } else {
+                        // Update debug status
+                        updateDebugStatus('Login failed: ' + (data.message || 'Unknown error'));
+                        
+                        // Show error message
+                        document.getElementById('password-error').textContent = data.message || 'Invalid username or password';
+                        document.getElementById('password-error').style.display = 'block';
+                    }
+                } catch (e) {
+                    // JSON parsing failed
+                    logDebug(`JSON parsing error: ${e.message}`);
                     
-                    // Redirect to home page
-                    window.location.href = 'index.html';
-                } else {
-                    // Login failed
-                    logDebug(`Login failed: ${data.message || "Unknown error"}`);
-                    document.getElementById('password-error').textContent = data.message || 'Invalid username or password';
+                    // Update debug status
+                    updateDebugStatus('Invalid response format');
+                    
+                    // Show error message
+                    document.getElementById('password-error').textContent = 'Server returned an invalid response format';
                     document.getElementById('password-error').style.display = 'block';
                 }
-            } catch (e) {
-                // JSON parsing failed
-                logDebug(`JSON parsing error: ${e.message}`);
+            })
+            .catch(error => {
+                // Hide loading spinner
                 document.getElementById('login-spinner').style.display = 'none';
-                document.getElementById('password-error').textContent = 'Server returned an invalid response';
+                
+                // Log error
+                logDebug(`Fetch error: ${error.message}`);
+                
+                // Update debug status
+                updateDebugStatus('POST request failed: ' + error.message);
+                
+                // Show error message
+                document.getElementById('password-error').textContent = 'Network error. Please try again.';
                 document.getElementById('password-error').style.display = 'block';
-            }
-        })
-        .catch(error => {
-            logDebug(`Login error: ${error.message}`);
-            document.getElementById('login-spinner').style.display = 'none';
-            document.getElementById('password-error').textContent = 'Network error. Please try again.';
-            document.getElementById('password-error').style.display = 'block';
-        });
-    }
-    
-    // Register link
-    document.getElementById('register-link').addEventListener('click', function() {
-        window.location.href = 'register.html';
-    });
-    
-    // Forgot password
-    document.querySelector('.forgot-password').addEventListener('click', function() {
-        alert('Password recovery feature coming soon.');
-    });
-    
-    // Check for URL parameters (for redirects from registration)
-    window.addEventListener('load', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Check for registration success message
-        if (urlParams.get('registered') === 'true') {
-            alert('Registration successful! Please log in with your new account.');
+            });
         }
-    });
-</script>
+        
+        // Register link
+        document.getElementById('register-link').addEventListener('click', function() {
+            window.location.href = 'register.html';
+        });
+        
+        // Forgot password
+        document.querySelector('.forgot-password').addEventListener('click', function() {
+            alert('Password recovery feature coming soon.');
+        });
+    </script>
+</body>
+</html>
