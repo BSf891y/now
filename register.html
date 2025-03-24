@@ -320,97 +320,64 @@
                 document.getElementById('username-error').textContent = 'Username is required';
                 document.getElementById('username-error').style.display = 'block';
                 isValid = false;
-            } else if (username.length < 3) {
-                document.getElementById('username-error').textContent = 'Username must be at least 3 characters';
-                document.getElementById('username-error').style.display = 'block';
-                isValid = false;
             }
-            
             if (!email) {
                 document.getElementById('email-error').textContent = 'Email is required';
                 document.getElementById('email-error').style.display = 'block';
                 isValid = false;
-            } else if (!isValidEmail(email)) {
-                document.getElementById('email-error').textContent = 'Please enter a valid email address';
-                document.getElementById('email-error').style.display = 'block';
-                isValid = false;
             }
-            
             if (!password) {
                 document.getElementById('password-error').textContent = 'Password is required';
                 document.getElementById('password-error').style.display = 'block';
                 isValid = false;
-            } else if (password.length < 6) {
-                document.getElementById('password-error').textContent = 'Password must be at least 6 characters';
-                document.getElementById('password-error').style.display = 'block';
-                isValid = false;
             }
-            
             if (password !== confirmPassword) {
                 document.getElementById('confirm-password-error').textContent = 'Passwords do not match';
                 document.getElementById('confirm-password-error').style.display = 'block';
                 isValid = false;
             }
-            
             if (!termsChecked) {
                 document.getElementById('terms-error').textContent = 'You must agree to the Terms and Conditions';
                 document.getElementById('terms-error').style.display = 'block';
                 isValid = false;
             }
             
-            if (isValid) {
-                // Show loading spinner
-                document.getElementById('register-spinner').style.display = 'block';
+            if (!isValid) return;
+            
+            // Show spinner while submitting
+            document.getElementById('register-spinner').style.display = 'block';
+            
+            // Prepare data to send to Google Apps Script
+            const formData = new FormData();
+            formData.append('action', 'register');
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('referralCode', referralCode);
+            
+            // Send the form data to Google Apps Script
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide the spinner
+                document.getElementById('register-spinner').style.display = 'none';
                 
-                // Send registration request to Google Apps Script
-                const url = `${SCRIPT_URL}?action=register&username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&referredBy=${encodeURIComponent(referralCode)}`;
-                
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Hide loading spinner
-                        document.getElementById('register-spinner').style.display = 'none';
-                        
-                        if (data.status === 'success') {
-                            // Show success message and redirect to login
-                            alert('Registration successful! Please login with your new account.');
-                            window.location.href = 'login.html';
-                        } else {
-                            // Show error message
-                            if (data.message.includes('Username or email already exists')) {
-                                document.getElementById('email-error').textContent = data.message;
-                                document.getElementById('email-error').style.display = 'block';
-                            } else {
-                                document.getElementById('password-error').textContent = data.message;
-                                document.getElementById('password-error').style.display = 'block';
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        // Hide loading spinner
-                        document.getElementById('register-spinner').style.display = 'none';
-                        
-                        // Show error message
-                        document.getElementById('password-error').textContent = 'An error occurred. Please try again.';
-                        document.getElementById('password-error').style.display = 'block';
-                        console.error('Error:', error);
-                    });
-            }
-        });
-        
-        // Terms and Conditions links
-        document.querySelectorAll('.terms-link').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Terms and Conditions document coming soon.');
+                // Handle success or failure
+                if (data.success) {
+                    window.location.href = 'login.html'; // Redirect to login page on success
+                } else {
+                    // Display error message
+                    alert(data.message || 'An error occurred');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error submitting the form');
             });
         });
-        
-        // Email validation helper function
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
     </script>
 </body>
 </html>
