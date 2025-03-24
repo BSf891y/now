@@ -301,6 +301,7 @@
                 }
             })
             .catch(error => {
+                console.error("Login error:", error);  // Log the error for debugging
                 loginSpinner.style.display = "none";
                 loginBtn.removeAttribute("disabled");
                 alert("An error occurred. Please try again.");
