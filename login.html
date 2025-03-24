@@ -257,7 +257,7 @@
                 // Reset errors
                 document.getElementById("username-error").style.display = "none";
                 document.getElementById("password-error").style.display = "none";
-                
+
                 // Simple client-side validation
                 if (!username || !password) {
                     if (!username) document.getElementById("username-error").textContent = "Username or email is required.";
@@ -304,6 +304,40 @@
                 }
             });
         });
+
+        function doPost(e) {
+    const data = JSON.parse(e.postData.contents);
+
+    // Your logic to check username and password (assume the login validation logic is here)
+    const username = data.username;
+    const password = data.password;
+    
+    // Check the credentials (example logic)
+    if (username === "admin" && password === "password123") {
+        // On successful login, send a success response with a redirect URL
+        const response = {
+            status: "success",
+            message: "Login successful!",
+            redirectUrl: "https://yourwebsite.com/home"  // Change to your actual home page URL
+        };
+        return createResponse(response);
+    } else {
+        // If login fails, send an error response
+        const response = {
+            status: "error",
+            message: "Invalid username or password."
+        };
+        return createResponse(response);
+    }
+}
+
+        function createResponse(data) {
+            return ContentService.createTextOutput(JSON.stringify(data))
+                .setMimeType(ContentService.MimeType.JSON)
+                .setHeader('Access-Control-Allow-Origin', '*')  // Allow requests from any origin
+                .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS') // Allow HTTP methods
+                .setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Allow headers
+        }
     </script>
 </body>
 </html>
