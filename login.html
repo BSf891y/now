@@ -1,145 +1,383 @@
-// Global variables
-const SHEET_ID = "13YQtVVTAzbuhbCN04_31ssgJHLxKzf75BJ6KnBOt0";
-const SALT_LENGTH = 16;
-const USER_PROPS = PropertiesService.getUserProperties();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Trading Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-// Handle OPTIONS requests (required for CORS)
-function doOptions(e) {
-  return ContentService.createTextOutput(JSON.stringify({status: "success"}))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeader("Access-Control-Allow-Origin", "*")
-    .setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-    .setHeader("Access-Control-Allow-Headers", "Content-Type");
-}
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
 
-// Handle GET requests with CORS headers
-function doGet(e) {
-  return createResponse(handleRequest(e));
-}
+        /* Container */
+        .container {
+            width: 470px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-width: 470px;
+            background-color: #fff;
+            min-height: 100vh;
+        }
 
-// Handle POST requests with CORS headers
-function doPost(e) {
-  return createResponse(handleRequest(e));
-}
+        /* Header Styles */
+        .header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+        }
 
-// Function to handle both GET and POST requests
-function handleRequest(e) {
-  try {
-    Logger.log("Received request: " + JSON.stringify(e));
-    let params = extractParams(e);
-    const action = params.action;
-    
-    if (!action) {
-      return { status: 'error', message: 'Missing action parameter' };
-    }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
 
-    switch (action) {
-      case 'test':
-        return { status: 'success', message: 'API is working!', timestamp: new Date().toISOString() };
-      case 'login':
-        return handleLogin(params);
-      case 'register':
-        return handleRegister(params);
-      default:
-        return { status: 'error', message: 'Invalid action. Supported actions: login, register, test' };
-    }
-  } catch (error) {
-    Logger.log("Error in handleRequest: " + error);
-    return { status: 'error', message: 'Server error: ' + error.message };
-  }
-}
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
 
-// Extract parameters from request
-function extractParams(e) {
-  let params = {};
-  try {
-    if (e.postData && e.postData.contents) {
-      params = JSON.parse(e.postData.contents);
-    } else {
-      params = e.parameter;
-    }
-  } catch (error) {
-    Logger.log("Error parsing parameters: " + error);
-  }
-  return params;
-}
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
 
-// Create a consistent response format
-function createResponse(response) {
-  return ContentService.createTextOutput(JSON.stringify(response))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeader("Access-Control-Allow-Origin", "*")
-    .setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-    .setHeader("Access-Control-Allow-Headers", "Content-Type");
-}
+        /* Login Form */
+        .login-section {
+            padding: 30px 20px;
+        }
 
-// Handle login requests
-function handleLogin(params) {
-  try {
-    const { username, password } = params;
-    if (!username || !password) {
-      return { status: 'error', message: 'Username and password are required' };
-    }
-    
-    const sheet = getSheet('Users');
-    if (!sheet) return { status: 'error', message: 'User data unavailable' };
-    
-    const data = sheet.getDataRange().getValues();
-    if (data.length <= 1) return { status: 'error', message: 'Authentication failed' };
-    
-    const headers = data[0];
-    const usernameCol = headers.indexOf('username');
-    const passwordCol = headers.indexOf('password');
-    if (usernameCol === -1 || passwordCol === -1) return { status: 'error', message: 'Invalid user database' };
-    
-    for (let i = 1; i < data.length; i++) {
-      if (data[i][usernameCol] === username && data[i][passwordCol] === password) {
-        return { status: 'success', message: 'Login successful', token: Utilities.getUuid() };
-      }
-    }
-    return { status: 'error', message: 'Invalid username or password' };
-  } catch (error) {
-    Logger.log("Login error: " + error);
-    return { status: 'error', message: 'Authentication failed' };
-  }
-}
+        .login-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+        }
 
-// Handle register requests
-function handleRegister(params) {
-  try {
-    const { username, password } = params;
-    if (!username || !password) {
-      return { status: 'error', message: 'Username and password are required' };
-    }
-    
-    const sheet = getSheet('Users', true);
-    const data = sheet.getDataRange().getValues();
-    const headers = data[0];
-    const usernameCol = headers.indexOf('username');
-    
-    if (usernameCol === -1) return { status: 'error', message: 'Invalid user database' };
-    
-    for (let i = 1; i < data.length; i++) {
-      if (data[i][usernameCol] === username) {
-        return { status: 'error', message: 'Username already exists' };
-      }
-    }
-    
-    sheet.appendRow([username, password]);
-    return { status: 'success', message: 'Registration successful' };
-  } catch (error) {
-    Logger.log("Registration error: " + error);
-    return { status: 'error', message: 'Registration failed' };
-  }
-}
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-// Retrieve or create a sheet
-function getSheet(sheetName, createIfMissing = false) {
-  const spreadsheet = SpreadsheetApp.openById(SHEET_ID);
-  let sheet = spreadsheet.getSheetByName(sheetName);
-  if (!sheet && createIfMissing) {
-    sheet = spreadsheet.insertSheet(sheetName);
-    sheet.appendRow(['username', 'password']);
-  }
-  return sheet;
-}
+        .form-label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffa500;
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #ffa500;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .forgot-password, .register-link {
+            color: #ffa500;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Error Message */
+        .error-message {
+            color: #ff3b30;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Debug Panel */
+        .debug-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .debug-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .debug-log {
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .action-btn.secondary {
+            background-color: #6c757d;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 470px) {
+            .container {
+                width: 100%;
+                min-width: 320px;
+            }
+        }
+
+        @media (min-width: 471px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                min-height: 100vh;
+                background-color: #f0f0f0;
+            }
+            
+            .container {
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="Logo" class="logo-img" style="background: linear-gradient(45deg, #ff6b6b, #ffa500); border-radius: 50%;">
+                <div class="logo-text">AI ROBOT</div>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="login-section">
+            <div class="login-title">Login to Your Account</div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username or Email</label>
+                    <input type="text" id="username" class="form-input" placeholder="Enter your username or email">
+                    <div class="error-message" id="username-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="password" class="form-input" placeholder="Enter your password">
+                        <div class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                    <div class="error-message" id="password-error"></div>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <div class="login-btn-content">
+                        <span>Login</span>
+                        <div class="spinner" id="login-spinner"></div>
+                    </div>
+                </button>
+                
+                <div class="login-options">
+                    <div class="forgot-password">Forgot Password?</div>
+                    <div class="register-link" id="register-link">Register Now</div>
+                </div>
+            </form>
+
+            <!-- Debug Panel -->
+            <div class="debug-panel" id="debug-panel">
+                <div class="debug-title">Debug Information</div>
+                <div>Status: <span id="debug-status">Ready</span></div>
+                <div>Last Request: <span id="debug-request">None</span></div>
+                <div>Last Response: <span id="debug-response">None</span></div>
+                <div class="debug-log" id="debug-log"></div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" id="try-get">Try GET Request</button>
+                    <button class="action-btn" id="try-post">Try POST Request</button>
+                    <button class="action-btn secondary" id="go-home">Go to Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmcpWwSqnDCzbrg4M7WUrfGHZONsv8eKqlyE7HxdQ1Ui0_ozLfsoQvicHjIt9YpNKTZA/exec'; // Replace with your actual URL
+
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Reset error messages
+        document.getElementById('username-error').style.display = 'none';
+        document.getElementById('password-error').style.display = 'none';
+
+        // Get input values
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        // Validate inputs
+        if (!username) {
+            document.getElementById('username-error').textContent = 'Username or email is required';
+            document.getElementById('username-error').style.display = 'block';
+            return;
+        }
+        if (!password) {
+            document.getElementById('password-error').textContent = 'Password is required';
+            document.getElementById('password-error').style.display = 'block';
+            return;
+        }
+
+        // Show loading spinner
+        document.getElementById('login-spinner').style.display = 'block';
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'login',
+                    username: username,
+                    password: password
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Network error. Try again later.');
+            }
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                // Store authentication data
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userData', JSON.stringify(data.user));
+
+                // Redirect to dashboard or home page
+                window.location.href = 'index.html';
+            } else {
+                throw new Error(data.message || 'Login failed');
+            }
+        } catch (error) {
+            document.getElementById('password-error').textContent = error.message;
+            document.getElementById('password-error').style.display = 'block';
+        } finally {
+            document.getElementById('login-spinner').style.display = 'none';
+        }
+    });
+
+    // Toggle password visibility
+    document.querySelector('.toggle-password').addEventListener('click', function () {
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = this.querySelector('i');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+</script>
+
+</body>
+</html>
