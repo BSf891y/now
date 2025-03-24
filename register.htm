@@ -6,197 +6,8 @@
     <title>Register - Crypto Trading Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Reset & Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-
-        /* Container */
-        .container {
-            width: 470px;
-            margin: 0 auto;
-            padding: 0;
-            position: relative;
-            min-width: 470px;
-            background-color: #fff;
-            min-height: 100vh;
-        }
-
-        /* Header Styles */
-        .header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #fff;
-            position: relative;
-        }
-
-        .back-btn {
-            font-size: 20px;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .header-title {
-            font-size: 18px;
-            font-weight: bold;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        /* Register Form */
-        .register-section {
-            padding: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #666;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #ffa500;
-        }
-
-        .password-input-container {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            cursor: pointer;
-        }
-
-        .referral-section {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-        }
-
-        .referral-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .register-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #ffa500;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        /* Error Message */
-        .error-message {
-            color: #ff3b30;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .register-btn-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Terms and Conditions */
-        .terms-container {
-            display: flex;
-            align-items: flex-start;
-            margin-top: 20px;
-        }
-
-        .terms-checkbox {
-            margin-right: 10px;
-            margin-top: 3px;
-        }
-
-        .terms-text {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .terms-link {
-            color: #ffa500;
-            text-decoration: none;
-        }
-
-        /* Media Queries for Responsiveness */
-        @media (max-width: 470px) {
-            .container {
-                width: 100%;
-                min-width: 320px;
-            }
-        }
-
-        @media (min-width: 471px) {
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
-                min-height: 100vh;
-                background-color: #f0f0f0;
-            }
-            
-            .container {
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            }
-        }
+        /* Your existing CSS styles */
+        /* ... */
     </style>
 </head>
 <body>
@@ -212,52 +23,8 @@
         <!-- Register Form -->
         <div class="register-section">
             <form id="register-form">
-                <div class="form-group">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" class="form-input" placeholder="Enter a username">
-                    <div class="error-message" id="username-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" class="form-input" placeholder="Enter your email">
-                    <div class="error-message" id="email-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <div class="password-input-container">
-                        <input type="password" id="password" class="form-input" placeholder="Create a password">
-                        <div class="toggle-password">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                    </div>
-                    <div class="error-message" id="password-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="confirm-password" class="form-label">Confirm Password</label>
-                    <div class="password-input-container">
-                        <input type="password" id="confirm-password" class="form-input" placeholder="Confirm your password">
-                        <div class="toggle-password">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                    </div>
-                    <div class="error-message" id="confirm-password-error"></div>
-                </div>
-                
-                <div class="referral-section">
-                    <div class="referral-title">Referral Code (Optional)</div>
-                    <input type="text" id="referral-code" class="form-input" placeholder="Enter referral code if you have one">
-                </div>
-                
-                <div class="terms-container">
-                    <input type="checkbox" id="terms-checkbox" class="terms-checkbox">
-                    <div class="terms-text">
-                        I agree to the <a href="#" class="terms-link">Terms and Conditions</a> and <a href="#" class="terms-link">Privacy Policy</a>
-                    </div>
-                </div>
-                <div class="error-message" id="terms-error"></div>
+                <!-- Your existing form fields -->
+                <!-- ... -->
                 
                 <button type="submit" class="register-btn">
                     <div class="register-btn-content">
@@ -266,12 +33,37 @@
                     </div>
                 </button>
             </form>
+            
+            <!-- Debug Panel -->
+            <div class="debug-panel" id="debug-panel" style="display: none;">
+                <div class="debug-title">Debug Information</div>
+                <div>Status: <span id="debug-status">Ready</span></div>
+                <div>Last Request: <span id="debug-request">None</span></div>
+                <div>Last Response: <span id="debug-response">None</span></div>
+                <div class="debug-log" id="debug-log" style="font-family: monospace; white-space: pre-wrap; max-height: 200px; overflow-y: auto; background-color: #333; color: #fff; padding: 10px; border-radius: 5px; margin-top: 10px;"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Google Apps Script Web App URL - Replace with your deployed web app URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPp62DYFxH3-z0-vVGFHY5NoB51OQOwa6AoDSg88tNPr7Q_H9nyty_PAzCScSxRZBDkw/exec';
+        // Google Apps Script Web App URL - Make sure this is correct
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEDbkAyiIJy89_FZKCyoxXXQrs5avD0vk10iKZA_f_vNN2PBuvGGZLOKnwSoS3fZ4xfw/exec';
+        
+        // Debug logging function
+        function logDebug(message) {
+            const debugLog = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.textContent += `[${timestamp}] ${message}\n`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(message);
+        }
+        
+        // Show debug panel (press Shift+D to show)
+        document.addEventListener('keydown', function(e) {
+            if (e.shiftKey && e.key === 'D') {
+                document.getElementById('debug-panel').style.display = 'block';
+            }
+        });
         
         // Back button functionality
         document.querySelector('.back-btn').addEventListener('click', function() {
@@ -347,16 +139,25 @@
             // Show spinner while submitting
             document.getElementById('register-spinner').style.display = 'block';
             
-            // Prepare data as JSON to send to Google Apps Script
+            // Try both methods - first with JSON, then with FormData if that fails
+            
+            // Method 1: JSON
+            tryJsonRegistration(username, email, password, referredBy);
+        });
+        
+        function tryJsonRegistration(username, email, password, referredBy) {
+            // Prepare data as JSON
             const jsonData = {
                 action: 'register',
                 username: username,
                 email: email,
                 password: password,
-                referredBy: referredBy // Changed from referralCode to referredBy to match server
+                referredBy: referredBy
             };
             
-            // Send the JSON data to Google Apps Script
+            logDebug("Sending JSON registration request: " + JSON.stringify(jsonData));
+            
+            // Send JSON request
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: {
@@ -364,28 +165,82 @@
                 },
                 body: JSON.stringify(jsonData)
             })
-            .then(response => response.json())
-            .then(data => {
-                // Hide the spinner
-                document.getElementById('register-spinner').style.display = 'none';
+            .then(response => {
+                logDebug("Response status: " + response.status);
+                return response.text();
+            })
+            .then(text => {
+                logDebug("Response text: " + text);
                 
-                // Handle success or failure - check for status instead of success
-                if (data.status === 'success') {
-                    // Redirect to login.html after successful registration
-                    alert('Registration successful! Please log in.');
-                    window.location.href = 'login.html';
-                } else {
-                    // Display error message
-                    alert(data.message || 'An error occurred. Please try again.');
+                try {
+                    const data = JSON.parse(text);
+                    handleRegistrationResponse(data);
+                } catch (e) {
+                    logDebug("JSON parse error: " + e.message);
+                    // If JSON parsing fails, try FormData method
+                    tryFormDataRegistration(username, email, password, referredBy);
                 }
             })
-            .catch(err => {
-                // Hide the spinner
-                document.getElementById('register-spinner').style.display = 'none';
-                console.error('Error:', err);
-                alert('An error occurred. Please try again.');
+            .catch(error => {
+                logDebug("Fetch error: " + error.message);
+                // If fetch fails, try FormData method
+                tryFormDataRegistration(username, email, password, referredBy);
             });
-        });
+        }
+        
+        function tryFormDataRegistration(username, email, password, referredBy) {
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('action', 'register');
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('referredBy', referredBy);
+            
+            logDebug("Sending FormData registration request");
+            
+            // Send FormData request
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                logDebug("Response status: " + response.status);
+                return response.text();
+            })
+            .then(text => {
+                logDebug("Response text: " + text);
+                
+                try {
+                    const data = JSON.parse(text);
+                    handleRegistrationResponse(data);
+                } catch (e) {
+                    logDebug("JSON parse error: " + e.message);
+                    // If both methods fail, show error
+                    document.getElementById('register-spinner').style.display = 'none';
+                    alert("Registration failed. Please try again later.");
+                }
+            })
+            .catch(error => {
+                logDebug("Fetch error: " + error.message);
+                document.getElementById('register-spinner').style.display = 'none';
+                alert("Registration failed. Please try again later.");
+            });
+        }
+        
+        function handleRegistrationResponse(data) {
+            // Hide spinner
+            document.getElementById('register-spinner').style.display = 'none';
+            
+            if (data.status === 'success') {
+                // Registration successful
+                alert("Registration successful! Please log in with your new account.");
+                window.location.href = 'login.html?registered=true';
+            } else {
+                // Registration failed
+                alert(data.message || "Registration failed. Please try again.");
+            }
+        }
     </script>
 </body>
 </html>
