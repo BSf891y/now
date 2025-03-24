@@ -298,8 +298,8 @@
     </div>
 
     <script>
-    // Google Apps Script Web App URL - Update with your new deployment URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_NEW_DEPLOYMENT_ID/exec';
+    // Google Apps Script Web App URL - Replace with your actual deployment URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxuLde3epPsZxNo6neAm5ubqzUTNlVScVxlTPBJfn_HhgUNfU-fpp1HMEnTsnHiuycTog/exec';
     
     // Debug mode - set to true to see detailed logs
     const DEBUG_MODE = true;
@@ -344,7 +344,7 @@
     });
     
     // Form validation and submission
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
         // Reset error messages
@@ -371,103 +371,87 @@
         }
         
         if (isValid) {
-            // First test if the API is accessible
-            testApiConnection()
-                .then(isConnected => {
-                    if (isConnected) {
-                        // API is accessible, proceed with login
-                        loginUser(username, password);
-                    } else {
-                        // API is not accessible
-                        document.getElementById('password-error').textContent = 'Cannot connect to server. Please try again later.';
-                        document.getElementById('password-error').style.display = 'block';
-                    }
-                });
+            try {
+                // Show loading spinner
+                document.getElementById('login-spinner').style.display = 'block';
+                
+                // First test API connection
+                const isConnected = await testApiConnection();
+                
+                if (!isConnected) {
+                    throw new Error('Cannot connect to server');
+                }
+                
+                // Proceed with login
+                await loginUser(username, password);
+            } catch (error) {
+                document.getElementById('password-error').textContent = error.message;
+                document.getElementById('password-error').style.display = 'block';
+            } finally {
+                document.getElementById('login-spinner').style.display = 'none';
+            }
         }
     });
     
     // Test API connection
-    function testApiConnection() {
+    async function testApiConnection() {
         logDebug("Testing API connection...");
         
-        return fetch(`${SCRIPT_URL}?action=test`, { 
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-        })
-        .then(response => {
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=test`, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+            
             logDebug(`Test response status: ${response.status}`);
-            return response.ok;
-        })
-        .catch(error => {
+            
+            if (!response.ok) {
+                throw new Error('API test failed');
+            }
+            
+            const data = await response.json();
+            return data.status === 'success';
+        } catch (error) {
             logDebug(`Test connection error: ${error.message}`);
             return false;
-        });
+        }
     }
     
     // Login user
-    function loginUser(username, password) {
-        // Show loading spinner
-        document.getElementById('login-spinner').style.display = 'block';
-        
+    async function loginUser(username, password) {
         logDebug(`Attempting login for user: ${username}`);
         
-        // Try URL parameters method first (more compatible with Google Apps Script)
-        const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-        
-        fetch(url, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-        })
-        .then(response => {
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+            
             logDebug(`Login response status: ${response.status}`);
             
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error('Network response was not ok');
             }
             
-            return response.text();
-        })
-        .then(text => {
-            logDebug(`Login response text: ${text}`);
+            const data = await response.json();
+            logDebug(`Login response: ${JSON.stringify(data)}`);
             
-            try {
-                const data = JSON.parse(text);
+            if (data.status === 'success') {
+                // Store auth data
+                localStorage.setItem('authToken', data.data.token);
+                localStorage.setItem('userData', JSON.stringify(data.data));
                 
-                // Hide spinner
-                document.getElementById('login-spinner').style.display = 'none';
-                
-                if (data.status === 'success') {
-                    // Login successful
-                    logDebug("Login successful!");
-                    
-                    // Save user data to localStorage
-                    localStorage.setItem('authToken', data.data?.token || 'temp-token');
-                    localStorage.setItem('userData', JSON.stringify(data.data || { username: username }));
-                    
-                    // Redirect to home page
-                    window.location.href = 'index.html';
-                } else {
-                    // Login failed
-                    logDebug(`Login failed: ${data.message || "Unknown error"}`);
-                    document.getElementById('password-error').textContent = data.message || 'Invalid username or password';
-                    document.getElementById('password-error').style.display = 'block';
-                }
-            } catch (e) {
-                // JSON parsing failed
-                logDebug(`JSON parsing error: ${e.message}`);
-                document.getElementById('login-spinner').style.display = 'none';
-                document.getElementById('password-error').textContent = 'Server returned an invalid response';
-                document.getElementById('password-error').style.display = 'block';
+                // Redirect to home
+                window.location.href = 'index.html';
+            } else {
+                throw new Error(data.message || 'Login failed');
             }
-        })
-        .catch(error => {
+        } catch (error) {
             logDebug(`Login error: ${error.message}`);
-            document.getElementById('login-spinner').style.display = 'none';
-            document.getElementById('password-error').textContent = 'Network error. Please try again.';
-            document.getElementById('password-error').style.display = 'block';
-        });
+            throw new Error(error.message || 'Login failed. Please try again.');
+        }
     }
     
     // Register link
@@ -480,15 +464,45 @@
         alert('Password recovery feature coming soon.');
     });
     
-    // Check for URL parameters (for redirects from registration)
+    // Debug buttons
+    document.getElementById('try-get').addEventListener('click', async function() {
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=test`);
+            const data = await response.json();
+            document.getElementById('debug-response').textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            document.getElementById('debug-response').textContent = error.message;
+        }
+    });
+    
+    document.getElementById('try-post').addEventListener('click', async function() {
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: 'test' })
+            });
+            const data = await response.json();
+            document.getElementById('debug-response').textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            document.getElementById('debug-response').textContent = error.message;
+        }
+    });
+    
+    document.getElementById('go-home').addEventListener('click', function() {
+        window.location.href = 'index.html';
+    });
+    
+    // Check for URL parameters
     window.addEventListener('load', function() {
         const urlParams = new URLSearchParams(window.location.search);
-        
-        // Check for registration success message
         if (urlParams.get('registered') === 'true') {
             alert('Registration successful! Please log in with your new account.');
         }
     });
-</script>
+    </script>
 </body>
 </html>
