@@ -235,109 +235,78 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("login-form");
-            const usernameField = document.getElementById("username");
-            const passwordField = document.getElementById("password");
-            const loginBtn = document.querySelector(".login-btn");
-            const loginSpinner = document.getElementById("login-spinner");
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("login-form");
+        const usernameField = document.getElementById("username");
+        const passwordField = document.getElementById("password");
+        const loginBtn = document.querySelector(".login-btn");
+        const loginSpinner = document.getElementById("login-spinner");
 
-            // Toggle password visibility
-            document.querySelector(".toggle-password").addEventListener("click", () => {
-                const type = passwordField.type === "password" ? "text" : "password";
-                passwordField.type = type;
-                document.querySelector(".toggle-password i").classList.toggle("fa-eye-slash");
-            });
-
-            // Handle form submission
-            form.addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const username = usernameField.value.trim();
-                const password = passwordField.value.trim();
-
-                // Reset errors
-                document.getElementById("username-error").style.display = "none";
-                document.getElementById("password-error").style.display = "none";
-
-                // Simple client-side validation
-                if (!username || !password) {
-                    if (!username) document.getElementById("username-error").textContent = "Username or email is required.";
-                    if (!password) document.getElementById("password-error").textContent = "Password is required.";
-                    document.getElementById("username-error").style.display = "block";
-                    document.getElementById("password-error").style.display = "block";
-                    return;
-                }
-
-                // Show loading spinner
-                loginBtn.setAttribute("disabled", "true");
-                loginSpinner.style.display = "inline-block";
-
-                // Send login request to the backend (replace with your backend URL)
-                fetch("https://script.google.com/macros/s/AKfycbxjhr3lc5OM_khmMAcllR-HEqsg7Zm3oVHZj3cXBRgI7W_jt7DaQfZHYT2-Hl1i8LoUOQ/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    action: "login",
-    username: username,  // Send username as part of the body
-    password: password   // Send password as part of the body
-  })
-})
-.then(response => response.json())
-.then(result => {
-  loginSpinner.style.display = "none";
-  loginBtn.removeAttribute("disabled");
-
-  if (result.status === "success") {
-    // Redirect user on successful login
-    window.location.href = result.redirectUrl;
-  } else {
-    // Show error messages
-    document.getElementById("password-error").textContent = result.message;
-    document.getElementById("password-error").style.display = "block";
-  }
-})
-.catch(error => {
-  loginSpinner.style.display = "none";
-  loginBtn.removeAttribute("disabled");
-  alert("An error occurred. Please try again.");
-});
+        // Toggle password visibility
+        document.querySelector(".toggle-password").addEventListener("click", () => {
+            const type = passwordField.type === "password" ? "text" : "password";
+            passwordField.type = type;
+            const icon = document.querySelector(".toggle-password i");
+            icon.classList.toggle("fa-eye");
+            icon.classList.toggle("fa-eye-slash");
         });
 
-        function doPost(e) {
-    const data = JSON.parse(e.postData.contents);
+        // Handle form submission
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const username = usernameField.value.trim();
+            const password = passwordField.value.trim();
 
-    // Your logic to check username and password (assume the login validation logic is here)
-    const username = data.username;
-    const password = data.password;
-    
-    // Check the credentials (example logic)
-    if (username === "admin" && password === "password123") {
-        // On successful login, send a success response with a redirect URL
-        const response = {
-            status: "success",
-            message: "Login successful!",
-            redirectUrl: "https://yourwebsite.com/home"  // Change to your actual home page URL
-        };
-        return createResponse(response);
-    } else {
-        // If login fails, send an error response
-        const response = {
-            status: "error",
-            message: "Invalid username or password."
-        };
-        return createResponse(response);
-    }
-}
+            // Reset errors
+            document.getElementById("username-error").style.display = "none";
+            document.getElementById("password-error").style.display = "none";
 
-        function createResponse(data) {
-            return ContentService.createTextOutput(JSON.stringify(data))
-                .setMimeType(ContentService.MimeType.JSON)
-                .setHeader('Access-Control-Allow-Origin', '*')  // Allow requests from any origin
-                .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS') // Allow HTTP methods
-                .setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Allow headers
-        }
-    </script>
+            // Simple client-side validation
+            if (!username || !password) {
+                if (!username) document.getElementById("username-error").textContent = "Username or email is required.";
+                if (!password) document.getElementById("password-error").textContent = "Password is required.";
+                document.getElementById("username-error").style.display = "block";
+                document.getElementById("password-error").style.display = "block";
+                return;
+            }
+
+            // Show loading spinner
+            loginBtn.setAttribute("disabled", "true");
+            loginSpinner.style.display = "inline-block";
+
+            // Send login request to the backend (replace with your backend URL)
+            fetch("https://script.google.com/macros/s/AKfycbxjhr3lc5OM_khmMAcllR-HEqsg7Zm3oVHZj3cXBRgI7W_jt7DaQfZHYT2-Hl1i8LoUOQ/exec", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action: "login",
+                    username: username,  // Send username as part of the body
+                    password: password   // Send password as part of the body
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                loginSpinner.style.display = "none";
+                loginBtn.removeAttribute("disabled");
+
+                if (result.status === "success") {
+                    // Redirect user on successful login
+                    window.location.href = result.redirectUrl;
+                } else {
+                    // Show error messages
+                    document.getElementById("password-error").textContent = result.message;
+                    document.getElementById("password-error").style.display = "block";
+                }
+            })
+            .catch(error => {
+                loginSpinner.style.display = "none";
+                loginBtn.removeAttribute("disabled");
+                alert("An error occurred. Please try again.");
+            });
+        });
+    });
+</script>
 </body>
 </html>
